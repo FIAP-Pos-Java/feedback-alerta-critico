@@ -5,9 +5,11 @@ import com.feedback.model.Feedback;
 import com.feedback.service.AlertaService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.quarkus.funqy.Funq;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.jboss.logging.Logger;
 
+@ApplicationScoped
 public class AlertaLambda {
 
     private static final Logger LOG = Logger.getLogger(AlertaLambda.class);
