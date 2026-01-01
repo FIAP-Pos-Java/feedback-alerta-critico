@@ -85,7 +85,7 @@ public class AlertaService {
             feedback.getNota(),
             nivelUrgencia,
             dataFormatada,
-            Instant.now().toString()
+            DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(Instant.now().atZone(java.time.ZoneId.systemDefault()))
         );
     }
 
@@ -107,6 +107,7 @@ public class AlertaService {
             return DateTimeFormatter.ISO_LOCAL_DATE_TIME
                 .format(instant.atZone(java.time.ZoneId.systemDefault()));
         } catch (Exception e) {
+            LOG.warnf("Erro ao formatar data: %s", dataISO);
             return dataISO;
         }
     }
