@@ -90,11 +90,14 @@ public class AlertaService {
     private String determinarNivelUrgencia(Integer nota) {
         if (nota == 0) {
             return "CRÍTICO MÁXIMO";
-        } else if (nota == 1) {
+        } 
+        else if (nota == 1) {
             return "CRÍTICO ALTO";
-        } else if (nota == 2) {
+        } 
+        else if (nota == 2) {
             return "CRÍTICO";
-        } else {
+        } 
+        else {
             return "BAIXO";
         }
     }
