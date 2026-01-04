@@ -1,15 +1,11 @@
 package com.feedback.lambda;
 
-import com.feedback.dto.SnsEventWrapper;
 import com.feedback.model.Feedback;
 import com.feedback.service.AlertaService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.quarkus.funqy.Funq;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.jboss.logging.Logger;
-
-import java.util.Map;
 
 @ApplicationScoped
 public class AlertaLambda {
@@ -19,13 +15,6 @@ public class AlertaLambda {
     @Inject
     AlertaService alertaService;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
-
-    /**
-     * O Quarkus Funqy faz o unwrap automático do evento SNS!
-     * Ele pega o campo "Message" do SNS e deserializa automaticamente para Feedback.
-     * Por isso recebemos diretamente o objeto Feedback aqui.
-     */
     @Funq
     public void processarAlertaCritico(Feedback feedback) {
         try {
