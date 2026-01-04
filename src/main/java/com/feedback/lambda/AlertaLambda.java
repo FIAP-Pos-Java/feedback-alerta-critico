@@ -18,27 +18,16 @@ public class AlertaLambda {
     @Funq
     public void processarAlertaCritico(Feedback feedback) {
         try {
-            LOG.info("=== INICIO PROCESSAMENTO ALERTA CRITICO ===");
-            
             if (feedback == null) {
-                LOG.error("Feedback é nulo!");
+                LOG.error("Feedback nulo recebido");
                 return;
             }
 
-            LOG.infof("Feedback crítico recebido via SNS:");
-            LOG.infof("  - ID: %s", feedback.getId());
-            LOG.infof("  - Descrição: %s", feedback.getDescricao());
-            LOG.infof("  - Nota: %d", feedback.getNota());
-            LOG.infof("  - Crítico: %s", feedback.getCritico());
-            LOG.infof("  - Data: %s", feedback.getDataCriacao());
-            
+            LOG.infof("Processando alerta critico. ID: %s, Nota: %d", feedback.getId(), feedback.getNota());
             alertaService.enviarAlerta(feedback);
-
-            LOG.info("✅ Alerta processado e email enviado com sucesso!");
-            LOG.info("=== FIM PROCESSAMENTO ALERTA CRITICO ===");
             
         } catch (Exception e) {
-            LOG.errorf(e, "❌ Erro ao processar alerta crítico do SNS");
+            LOG.errorf(e, "Erro ao processar alerta critico");
             throw new RuntimeException("Erro ao processar alerta", e);
         }
     }

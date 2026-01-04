@@ -54,11 +54,10 @@ public class AlertaService {
                     .build())
                 .build();
 
-            SendEmailResponse response = sesClient.sendEmail(emailRequest);
-            LOG.infof("Email de alerta enviado com sucesso. MessageId: %s, Feedback ID: %s", 
-                response.messageId(), feedback.getId());
+            sesClient.sendEmail(emailRequest);
+            LOG.infof("Email enviado. Feedback ID: %s", feedback.getId());
         } catch (SesException e) {
-            LOG.errorf(e, "Erro ao enviar email de alerta. Feedback ID: %s", feedback.getId());
+            LOG.errorf(e, "Erro ao enviar email. Feedback ID: %s", feedback.getId());
             throw new RuntimeException("Erro ao enviar email de alerta", e);
         }
     }
@@ -107,7 +106,6 @@ public class AlertaService {
             DateTimeFormatter formatoBrasileiro = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
             return dataHora.format(formatoBrasileiro);
         } catch (Exception e) {
-            LOG.warnf("Erro ao formatar data: %s. Usando formato original.", dataISO);
             try {
                 if (dataISO != null && dataISO.contains("T")) {
                     String[] partes = dataISO.split("T");
