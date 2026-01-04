@@ -75,10 +75,10 @@ public class Feedback {
     }
 
     public static Feedback fromRequest(String descricao, Integer nota) {
-        String id = java.util.UUID.randomUUID().toString();
-        String dataCriacao = Instant.now().toString();
-        Boolean critico = nota <= 3;
-        
+        var id = java.util.UUID.randomUUID().toString();
+        var dataCriacao = Instant.now().toString();
+        var critico = nota <= 3;
+
         return new Feedback(id, descricao, nota, dataCriacao, critico);
     }
 }

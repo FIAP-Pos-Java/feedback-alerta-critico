@@ -8,7 +8,6 @@ import org.jboss.logging.Logger;
 import software.amazon.awssdk.services.ses.SesClient;
 import software.amazon.awssdk.services.ses.model.*;
 
-import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 
 @ApplicationScoped
@@ -19,7 +18,7 @@ public class AlertaService {
     @Inject
     SesClient sesClient;
 
-    @ConfigProperty(name = "ses.email.destino", defaultValue = "eduardaclx@gmail.com")
+    @ConfigProperty(name = "ses.email.destino")
     String emailDestino;
 
     @ConfigProperty(name = "ses.email.remetente")
@@ -32,8 +31,8 @@ public class AlertaService {
         }
 
         try {
-            String assunto = "ALERTA: Feedback Crítico Recebido";
-            String corpoEmail = criarCorpoEmail(feedback);
+            var assunto = "ALERTA: Feedback Crítico Recebido";
+            var corpoEmail = criarCorpoEmail(feedback);
 
             SendEmailRequest emailRequest = SendEmailRequest.builder()
                 .source(emailRemetente)
@@ -56,15 +55,17 @@ public class AlertaService {
 
             sesClient.sendEmail(emailRequest);
             LOG.infof("Email enviado. Feedback ID: %s", feedback.getId());
-        } catch (SesException e) {
+        } 
+        catch (SesException e) 
+        {
             LOG.errorf(e, "Erro ao enviar email. Feedback ID: %s", feedback.getId());
             throw new RuntimeException("Erro ao enviar email de alerta", e);
         }
     }
 
     private String criarCorpoEmail(Feedback feedback) {
-        String nivelUrgencia = determinarNivelUrgencia(feedback.getNota());
-        String dataFormatada = formatarData(feedback.getDataCriacao());
+        var nivelUrgencia = determinarNivelUrgencia(feedback.getNota());
+        var dataFormatada = formatarData(feedback.getDataCriacao());
 
         return String.format(
             "ALERTA DE FEEDBACK CRÍTICO\n\n" +
@@ -77,14 +78,12 @@ public class AlertaService {
             "Nível de Urgência: %s\n" +
             "Data de Criação: %s\n" +
             "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n" +
-            "Por favor, revise este feedback e tome as ações necessárias.\n\n" +
-            "Data de Envio do Alerta: %s",
+            "Por favor, revise este feedback e tome as ações necessárias.",
             feedback.getId(),
             feedback.getDescricao(),
             feedback.getNota(),
             nivelUrgencia,
-            dataFormatada,
-            DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(Instant.now().atZone(java.time.ZoneId.systemDefault()))
+            dataFormatada
         );
     }
 
@@ -102,19 +101,25 @@ public class AlertaService {
 
     private String formatarData(String dataISO) {
         try {
-            java.time.LocalDateTime dataHora = java.time.LocalDateTime.parse(dataISO);
-            DateTimeFormatter formatoBrasileiro = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+            var dataHora = java.time.LocalDateTime.parse(dataISO);
+            var formatoBrasileiro = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
             return dataHora.format(formatoBrasileiro);
-        } catch (Exception e) {
+        } 
+        catch (Exception e) 
+        {
             try {
                 if (dataISO != null && dataISO.contains("T")) {
-                    String[] partes = dataISO.split("T");
-                    String data = partes[0];
-                    String hora = partes[1].split("\\.")[0];
+                    var partes = dataISO.split("T");
+                    var data = partes[0];
+                    var hora = partes[1].split("\\.")[0];
                     return data.replace("-", "/") + " " + hora;
                 }
-            } catch (Exception ex) {
+            } 
+            catch (Exception ex) 
+            {
+                LOG.warnf(ex, "Erro ao formatar data alternativa. DataISO: %s", dataISO);
             }
+
             return dataISO;
         }
     }

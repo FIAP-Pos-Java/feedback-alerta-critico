@@ -25,8 +25,10 @@ public class AlertaLambda {
 
             LOG.infof("Processando alerta critico. ID: %s, Nota: %d", feedback.getId(), feedback.getNota());
             alertaService.enviarAlerta(feedback);
-            
-        } catch (Exception e) {
+
+        } 
+        catch (Exception e) 
+        {
             LOG.errorf(e, "Erro ao processar alerta critico");
             throw new RuntimeException("Erro ao processar alerta", e);
         }

@@ -25,18 +25,20 @@ public class SnsWebhookResource {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response receberNotificacaoSNS(String body) {
         try {
-            JsonNode rootNode = objectMapper.readTree(body);
+            var rootNode = objectMapper.readTree(body);
             
             if (rootNode.has("Type") && "SubscriptionConfirmation".equals(rootNode.get("Type").asText())) {
                 return Response.ok().build();
             }
 
-            String messageStr = rootNode.has("Message") ? rootNode.get("Message").asText() : body;
-            com.feedback.model.Feedback feedback = objectMapper.readValue(messageStr, com.feedback.model.Feedback.class);
+            var messageStr = rootNode.has("Message") ? rootNode.get("Message").asText() : body;
+            var feedback = objectMapper.readValue(messageStr, com.feedback.model.Feedback.class);
             alertaLambda.processarAlertaCritico(feedback);
 
             return Response.ok().entity("{\"status\": \"Notificação processada com sucesso\"}").build();
-        } catch (Exception e) {
+        } 
+        catch (Exception e) 
+        {
             LOG.errorf(e, "Erro ao processar notificacao SNS");
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                 .entity("{\"error\": \"" + e.getMessage() + "\"}")
