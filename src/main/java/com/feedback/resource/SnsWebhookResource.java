@@ -1,6 +1,6 @@
 package com.feedback.resource;
 
-import com.feedback.dto.SnsEvent;
+import com.feedback.dto.SnsEventWrapper;
 import com.feedback.lambda.AlertaLambda;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,6 +11,9 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.jboss.logging.Logger;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Path("/sns-webhook")
 public class SnsWebhookResource {
@@ -39,15 +42,12 @@ public class SnsWebhookResource {
 
             // Extrai a mensagem SNS
             String messageStr = rootNode.has("Message") ? rootNode.get("Message").asText() : body;
-            String subject = rootNode.has("Subject") ? rootNode.get("Subject").asText() : "Alerta Crítico";
 
-            // Cria evento SNS
-            SnsEvent snsEvent = new SnsEvent();
-            snsEvent.setMessage(messageStr);
-            snsEvent.setSubject(subject);
+            // Deserializa a mensagem para Feedback
+            com.feedback.model.Feedback feedback = objectMapper.readValue(messageStr, com.feedback.model.Feedback.class);
 
             // Processa através do Lambda
-            alertaLambda.processarAlertaCritico(snsEvent);
+            alertaLambda.processarAlertaCritico(feedback);
 
             return Response.ok().entity("{\"status\": \"Notificação processada com sucesso\"}").build();
         } catch (Exception e) {

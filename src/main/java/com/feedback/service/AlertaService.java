@@ -103,11 +103,25 @@ public class AlertaService {
 
     private String formatarData(String dataISO) {
         try {
-            Instant instant = Instant.parse(dataISO);
-            return DateTimeFormatter.ISO_LOCAL_DATE_TIME
-                .format(instant.atZone(java.time.ZoneId.systemDefault()));
+            // A data vem no formato LocalDateTime com nanossegundos
+            java.time.LocalDateTime dataHora = java.time.LocalDateTime.parse(dataISO);
+            
+            // Formata para um formato mais legível: dd/MM/yyyy HH:mm:ss
+            DateTimeFormatter formatoBrasileiro = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+            return dataHora.format(formatoBrasileiro);
         } catch (Exception e) {
-            LOG.warnf("Erro ao formatar data: %s", dataISO);
+            LOG.warnf("Erro ao formatar data: %s. Usando formato original.", dataISO);
+            // Se falhar, tenta pelo menos remover os nanossegundos extras
+            try {
+                if (dataISO != null && dataISO.contains("T")) {
+                    String[] partes = dataISO.split("T");
+                    String data = partes[0];
+                    String hora = partes[1].split("\\.")[0]; // Remove os nanossegundos
+                    return data.replace("-", "/") + " " + hora;
+                }
+            } catch (Exception ex) {
+                // Se tudo falhar, retorna a data original
+            }
             return dataISO;
         }
     }
