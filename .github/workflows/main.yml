@@ -1,0 +1,37 @@
+name: Deploy Lambda Java Feedback Alerta Crítico
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:   # permite execução manual
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v3
+
+      - name: Configurar JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Build com Maven
+        run: mvn clean package -DskipTests
+
+      - name: Configurar credenciais AWS
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-2   # ajuste conforme sua região
+
+      - name: Atualizar Lambda na AWS
+        run: |
+          aws lambda update-function-code \
+            --function-name feedback-alerta-critico \
+            --zip-file fileb://target/function.zip
